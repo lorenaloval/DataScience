@@ -1,0 +1,5 @@
+Creación de un script R llamado run_analysis.R con lo siguiente:
+- combinación del conjunto de datos de entrenamiento y prueba en un solo conjunto de datos.
+- calcular la media y sd para cada variable. 
+- Agregar a cada observación el nombre de su actividad correspondiente.
+- Calcular la media por actividad e individuo. 
