@@ -1,0 +1,107 @@
+
+ 				============================
+				PROYECTO: Uso del Smartphone
+				============================
+
+
+# http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones 
+
+
+   Directorio de trabajo
+   ---------------------
+
+setwd("C:/Users/Lorena/Desktop/Coursera/Toolbox Data Science/getting and cleaning data/proyecto/UCI HAR Dataset")
+
+
+   Lectura de datos 'train'
+   ------------------------
+body_acc_x_train <- read.table("body_acc_x_train.txt")
+body_acc_y_train <- read.table("body_acc_y_train.txt")
+body_acc_z_train <- read.table("body_acc_z_train.txt")
+body_gyro_x_train <- read.table("body_gyro_x_train.txt")
+body_gyro_y_train <- read.table("body_gyro_y_train.txt")
+body_gyro_z_train <- read.table("body_gyro_z_train.txt")
+total_acc_x_train <- read.table("total_acc_x_train.txt")
+total_acc_y_train <- read.table("total_acc_y_train.txt")
+total_acc_z_train <- read.table("total_acc_z_train.txt")
+x_train <- read.table("x_train.txt")
+y_train <- read.table("y_train.txt")
+subject_train <- read.table("subject_train.txt")
+
+
+
+   Lectura de datos 'test'
+   -----------------------
+body_acc_x_test<- read.table("body_acc_x_test.txt")
+body_acc_y_test<- read.table("body_acc_y_test.txt")
+body_acc_z_test<- read.table("body_acc_z_test.txt")
+body_gyro_x_test<- read.table("body_gyro_x_test.txt")
+body_gyro_y_test<- read.table("body_gyro_y_test.txt")
+body_gyro_z_test<- read.table("body_gyro_z_test.txt")
+total_acc_x_test<- read.table("total_acc_x_test.txt")
+total_acc_y_test<- read.table("total_acc_y_test.txt")
+total_acc_z_test<- read.table("total_acc_z_test.txt")
+x_test<- read.table("x_test.txt")
+y_test<- read.table("y_test.txt")
+subject_test<- read.table("subject_test.txt")
+
+ # Los datos "train" contienen la muestra de entrenamiento, que corresponde 
+ # al 70% de la población, formada por la unión de ficheros "train"
+ # mediante la función 'cbind' unimos las tablas por columnas
+
+colnames(subject_train) <- c("individuo")
+colnames(y_train) <- c("actividad")
+
+data_train<-cbind(body_acc_x_train,body_acc_y_train,body_acc_z_train,
+                  body_gyro_x_train,body_gyro_y_train,body_gyro_z_train,
+                  total_acc_x_train,total_acc_y_train,total_acc_z_train,
+                  x_train,y_train,subject_train)
+str(data_train) # 7352 obs. y 1715 variables
+data_train[1:10,]
+
+ # Los datos "test" contienen la muestra de prueba, que corresponde 
+ # al 30% de la población, formada por la unión de ficheros "test"
+ # mediante la función 'cbind' unimos las tablas por columnas
+
+colnames(subject_test) <- c("individuo")
+colnames(y_test) <- c("actividad")
+
+data_test<-cbind(body_acc_x_test,body_acc_y_test,body_acc_z_test,
+                 body_gyro_x_test,body_gyro_y_test,body_gyro_z_test,
+                 total_acc_x_test,total_acc_y_test,total_acc_z_test,
+                 x_test,y_test,subject_test)
+str(data_test) # 2947 obs. y 1715 variables
+data_test[1:10,]
+
+ # Formamos un único conjunto de datos, uniendo los datos de entrenamiento 
+ # más los datos de prueba. Esto lo haremos mediante la función 'rbind', lo
+ # que indica que la unión de ambas tablas se hará por filas, ya que ambos 
+ # conjuntos están formados por las mismas variables.
+
+data<-rbind(data_train,data_test)
+data[1:10,]
+
+
+  Media y Desviacion tipica para cada variable (tenemos 1715 variables)
+  ---------------------------------------------------------------------
+
+  media<-apply(data[,1:1715],MARGIN=2,FUN=mean)
+  sd<-apply(data[,1:1715],MARGIN=2,FUN=sd)
+
+
+  Identificamos para el conjunto de datos, a que actividad corresponde cada observación
+  -------------------------------------------------------------------------------------
+install.packages("doBy")
+library(plyr)
+library(doBy)
+
+actividad <- read.table("activity_labels.txt")
+colnames(actividad) <- c("actividad","nombre_actividad")
+data <- join(data,actividad, by = "actividad", type = "left", match = "all")
+data[1:10,]
+
+
+  Calculamos la Media por actividad e individuo
+  ---------------------------------------------
+solucion <- summaryBy(.~nombre_actividad+individuo, data = data, FUN = mean )
+
